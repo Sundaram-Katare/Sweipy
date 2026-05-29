@@ -19,7 +19,7 @@ export default function LoginPage() {
             <div className="flex min-h-screen items-center justify-center">
                 <button
                     onClick={signInWithGithub}
-                    className="rounded-lg bg-black px-6 py-3 text-white"
+                    className="rounded-lg bg-red-500 px-6 py-3 text-white"
                 >
                     Continue with GitHub
                 </button>
