@@ -9,7 +9,17 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
 
-    await supabase.auth.exchangeCodeForSession(code);
+    const {
+      data: { user },
+    } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (user) {
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        username: user.user_metadata.user_name,
+        avatar_url: user.user_metadata.avatar_url,
+      });
+    }
   }
 
   return NextResponse.redirect(`${origin}/`);
