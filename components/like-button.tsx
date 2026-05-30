@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
-
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-
-import { createClient } from "@/lib/supabase/client";
+import { toggleLikeAction, getLikeStatusAction } from "@/actions/likes";
 
 type Props = {
   componentId: string;
-
   initialLikes: number;
 };
 
@@ -18,66 +15,92 @@ export default function LikeButton({
   componentId,
   initialLikes,
 }: Props) {
-  const supabase = createClient();
+  const [likes, setLikes] = useState(initialLikes);
+  const [isLiked, setIsLiked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [likes, setLikes] =
-    useState(initialLikes);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const handleLike = async () => {
-    try {
-      setLoading(true);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        toast.error("Login first");
-        return;
+  useEffect(() => {
+    // Fetch initial like status for logged in user
+    async function loadStatus() {
+      try {
+        const { isLiked: liked } = await getLikeStatusAction(componentId);
+        setIsLiked(liked);
+      } catch (err) {
+        console.error("Failed to load like status:", err);
       }
+    }
+    loadStatus();
+  }, [componentId]);
 
-      await supabase
-        .from("likes")
-        .insert({
-          component_id: componentId,
-          user_id: user.id,
-        });
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Avoid triggering parent <Link> routes
 
-      await supabase.rpc(
-        "increment_likes",
-        {
-          row_id: componentId,
-        }
-      );
+    if (loading) return;
 
-      setLikes((prev) => prev + 1);
+    // Optimistic Update
+    const prevIsLiked = isLiked;
+    const prevLikes = likes;
 
-      toast.success("Liked");
-    } catch (err) {
-      console.log(err);
+    setIsLiked(!prevIsLiked);
+    setLikes(prevIsLiked ? Math.max(0, prevLikes - 1) : prevLikes + 1);
+    setLoading(true);
 
-      toast.error("Already liked");
+    try {
+      const result = await toggleLikeAction(componentId);
+      setIsLiked(result.isLiked);
+      
+      if (result.isLiked) {
+        toast.success("Added to likes", { icon: "❤️" });
+      } else {
+        toast.success("Removed from likes", { icon: "💔" });
+      }
+    } catch (err: any) {
+      // Revert optimistic changes
+      setIsLiked(prevIsLiked);
+      setLikes(prevLikes);
+      toast.error(err.message || "Please login to like components.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <button
-      disabled={loading}
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       onClick={handleLike}
-      className="
+      className={`
         flex
         items-center
-        gap-2
-      "
+        gap-1.5
+        px-3
+        py-1.5
+        rounded-xl
+        border
+        transition-all
+        cursor-pointer
+        font-sans
+        text-sm
+        font-semibold
+        ${
+          isLiked
+            ? "bg-rose-500/10 border-rose-500/20 text-rose-500 dark:bg-rose-500/20"
+            : "bg-slate-50 dark:bg-zinc-800/40 border-slate-200/60 dark:border-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-rose-500"
+        }
+      `}
     >
-      <Heart size={20} />
+      <motion.div
+        animate={isLiked ? { scale: [1, 1.3, 1] } : {}}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        <Heart
+          size={16}
+          className={`${isLiked ? "fill-rose-500 stroke-rose-500" : ""}`}
+        />
+      </motion.div>
 
-      <p>{likes}</p>
-    </button>
+      <span className="tabular-nums">{likes}</span>
+    </motion.button>
   );
 }
