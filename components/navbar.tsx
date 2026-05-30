@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Button } from "./ui/button";
-import { Heart, Upload, ChevronDown } from "lucide-react";
+import { Heart, Upload } from "lucide-react";
+import UserMenu from "./user-menu";
 
 export default async function Navbar() {
     const supabase = await createClient();
@@ -76,16 +77,7 @@ export default async function Navbar() {
                                 </Link>
                             </Button>
 
-                            <div className="flex items-center gap-2 pl-2 border-l border-slate-100">
-                                <Link href="/profile" className="flex items-center gap-1.5 hover:opacity-90 transition-opacity">
-                                    <img 
-                                        src={user.user_metadata?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                                        alt={user.email || "User Avatar"} 
-                                        className="w-10 h-10 rounded-full object-cover border border-slate-100 shadow-sm"
-                                    />
-                                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                                </Link>
-                            </div>
+                            <UserMenu user={user} />
                         </>
                     ) : (
                         <Button 

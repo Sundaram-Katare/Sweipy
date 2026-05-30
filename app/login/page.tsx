@@ -6,10 +6,11 @@ export default function LoginPage() {
     const supabase = createClient();
 
     const signInWithGithub = async () => {
+        const redirectTo = `${window.location.origin}/auth/callback`;
         await supabase.auth.signInWithOAuth({
             provider: "github",
             options: {
-                redirectTo: "http://localhost:3000/auth/callback",
+                redirectTo,
             },
         });
     };

@@ -9,15 +9,22 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
 
+    await supabase.auth.exchangeCodeForSession(code);
+
     const {
       data: { user },
-    } = await supabase.auth.exchangeCodeForSession(code);
+    } = await supabase.auth.getUser();
 
     if (user) {
       await supabase.from("profiles").upsert({
         id: user.id,
-        username: user.user_metadata.user_name,
+        username:
+          user.user_metadata.user_name ||
+          user.user_metadata.full_name,
+
         avatar_url: user.user_metadata.avatar_url,
+
+        bio: "",
       });
     }
   }
