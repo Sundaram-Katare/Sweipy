@@ -5,6 +5,8 @@ import Navbar from "@/components/navbar";
 import { Poppins, Dancing_Script } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/theme-provider";
+import RatingButton from "@/components/rating-button";
+import { Analytics } from "@vercel/analytics/react";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -29,12 +31,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UISwipe - Modern Frontend Inspiration & UI Sharing",
+  title: "Sweipy",
   description: "Browse, swipe, and download premium reusable website templates, Hero sections, and dashboard interfaces. An app-like feed built for creator communities.",
   keywords: ["frontend", "ui/ux", "web design", "components", "react templates", "tailwindcss inspiration"],
-  authors: [{ name: "UISwipe Community" }],
+  authors: [{ name: "Sweipy Community" }],
   openGraph: {
-    title: "UISwipe - Premium Frontend Component Inspiration",
+    title: "Sweipy - Premium Frontend Component Inspiration",
     description: "Browse, swipe, and share stunning interactive website components and frontend sections.",
     type: "website",
   }
@@ -64,6 +66,8 @@ export default function RootLayout({
           <main className="flex-1 w-full flex flex-col">
             {children}
           </main>
+          <RatingButton />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

@@ -39,7 +39,7 @@ export default function NotificationsMenu({ userId }: NotificationsMenuProps) {
 
       if (!error && data) {
         setNotifications(data);
-        setUnreadCount(data.filter((n) => !n.read).length);
+        setUnreadCount(data.filter((n: any) => !n.read).length);
       }
     }
     loadNotifications();
@@ -57,7 +57,7 @@ export default function NotificationsMenu({ userId }: NotificationsMenuProps) {
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
-        async (payload) => {
+        async (payload: any) => {
           // Fetch the actor profiles and component details to represent full visual notifications
           const { data: actor } = await supabase
             .from("profiles")

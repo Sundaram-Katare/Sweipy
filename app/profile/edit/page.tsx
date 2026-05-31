@@ -97,7 +97,7 @@ export default function EditProfilePage() {
             Account Settings
           </h1>
           <p className="text-xs text-slate-400 font-sans">
-            Customize how you appear across the UISwipe feed community.
+            Customize how you appear across the Sweipy feed community.
           </p>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function EditProfilePage() {
                 alt="Avatar preview"
                 className="w-8 h-8 rounded-full object-cover border border-slate-200"
                 onError={(e) => {
-                  (e.target as any).src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                  (e.target as any).src = "/default-avatar.avif";
                 }}
               />
               <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Preview Avatar</span>

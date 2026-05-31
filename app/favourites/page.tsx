@@ -15,10 +15,10 @@ export default async function FavouritesPage() {
     redirect("/login");
   }
 
-  // Fetch bookmarked components joined with profiles
+  // Fetch bookmarked components joined with profiles and counts
   const { data: savedRecords, error } = await supabase
     .from("favorites")
-    .select("*, components(*, profiles(*))")
+    .select("*, components(*, profiles(*), likes(count), comments(count))")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -26,9 +26,17 @@ export default async function FavouritesPage() {
     console.error("Error fetching bookmarks:", error);
   }
 
-  // Extract component records from join
+  // Extract component records from join and map dynamic counts
   const bookmarkedComponents = (savedRecords || [])
-    .map((record: any) => record.components)
+    .map((record: any) => {
+      const comp = record.components;
+      if (!comp) return null;
+      return {
+        ...comp,
+        likes_count: comp.likes?.[0]?.count ?? comp.likes_count ?? 0,
+        comments_count: comp.comments?.[0]?.count ?? comp.comments_count ?? 0,
+      };
+    })
     .filter(Boolean);
 
   return (

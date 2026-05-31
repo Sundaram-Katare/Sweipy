@@ -42,7 +42,7 @@ export default async function ComponentPage({
     .eq("id", componentId);
 
   const author = component.profiles;
-  const authorAvatar = author?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  const authorAvatar = author?.avatar_url || "/default-avatar.avif";
   const authorUsername = author?.username || "Anonymous";
 
   return (

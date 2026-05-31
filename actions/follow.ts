@@ -98,3 +98,31 @@ export async function getFollowCountsAction(userId: string) {
     following: followingCount || 0
   };
 }
+
+export async function getFollowersListAction(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("follows")
+    .select("follower:profiles!follower_id(*)")
+    .eq("following_id", userId);
+
+  if (error) {
+    console.error("Error fetching followers list:", error);
+    return [];
+  }
+  return (data || []).map((item: any) => item.follower).filter(Boolean);
+}
+
+export async function getFollowingListAction(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("follows")
+    .select("following:profiles!following_id(*)")
+    .eq("follower_id", userId);
+
+  if (error) {
+    console.error("Error fetching following list:", error);
+    return [];
+  }
+  return (data || []).map((item: any) => item.following).filter(Boolean);
+}

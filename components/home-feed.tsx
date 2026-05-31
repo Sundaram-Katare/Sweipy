@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Keyboard } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Keyboard, Star, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FilterBar from "./filter-bar";
 import SearchBar from "./search-bar";
@@ -10,6 +10,9 @@ import { ComponentCard } from "@/types/database";
 
 type Props = {
   components: ComponentCard[];
+  averageRating?: number;
+  totalRatingsCount?: number;
+  usersCount?: number;
 };
 
 const containerVariants = {
@@ -35,7 +38,12 @@ const childVariants = {
   },
 };
 
-export default function HomeFeed({ components }: Props) {
+export default function HomeFeed({
+  components,
+  averageRating = 0,
+  totalRatingsCount = 0,
+  usersCount = 0,
+}: Props) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -152,6 +160,24 @@ export default function HomeFeed({ components }: Props) {
         <p className="text-sm sm:text-base text-slate-500 dark:text-zinc-400 font-sans max-w-md">
          | Swipe | Discover | Inspired |
         </p>
+        {/* Rating and Users Statistics section */}
+        <div className="flex items-center justify-center gap-2.5 mt-3 text-xs font-semibold font-sans tracking-wide select-none">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 dark:bg-zinc-900/60 border border-slate-200/30 dark:border-zinc-800/50 text-slate-600 dark:text-zinc-300 shadow-xs hover:bg-slate-200/50 dark:hover:bg-zinc-900/90 transition-colors duration-200">
+            <Star className="w-4.5 h-4.5 text-amber-500 fill-amber-500" />
+            <span className="text-lg">{averageRating > 0 ? `${averageRating} / 5` : "5.0 / 5"}</span>
+            {totalRatingsCount > 0 && (
+              <span className="text-lg text-slate-400 dark:text-zinc-500 font-normal">
+                Rating
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 dark:bg-zinc-900/60 border border-slate-200/30 dark:border-zinc-800/50 text-slate-600 dark:text-zinc-300 shadow-xs hover:bg-slate-200/50 dark:hover:bg-zinc-900/90 transition-colors duration-200">
+            <Users className="w-3.5 h-3.5 text-indigo-500" />
+            <span className="text-lg">
+              {usersCount} {usersCount === 1 ? "Creator" : "Creators"}
+            </span>
+          </div>
+        </div>
       </div>
 
       <SearchBar value={searchQuery} onChange={setSearchQuery} />

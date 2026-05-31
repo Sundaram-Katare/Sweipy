@@ -17,15 +17,19 @@ export default async function ExplorePage({
 
   const supabase = await createClient();
 
-  // Fetch all components with profiles
-  let query = supabase.from("components").select("*, profiles(*)");
+  // Fetch all components with profiles, likes count, and comments count dynamically
+  let query = supabase.from("components").select("*, profiles(*), likes(count), comments(count)");
 
   if (activeCategory !== "All") {
     query = query.eq("category", activeCategory);
   }
 
-  const { data: components } = await query;
-  const list = components || [];
+  const { data: rawComponents } = await query;
+  const list = (rawComponents || []).map((comp: any) => ({
+    ...comp,
+    likes_count: comp.likes?.[0]?.count ?? comp.likes_count ?? 0,
+    comments_count: comp.comments?.[0]?.count ?? comp.comments_count ?? 0,
+  }));
 
   // Implement the rankings logic for various tabs
   const sortedComponents = [...list].sort((a: any, b: any) => {

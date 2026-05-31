@@ -15,6 +15,8 @@ interface FloatingNavbarProps {
 export default function FloatingNavbar({ user }: FloatingNavbarProps) {
   const pathname = usePathname();
 
+  if (pathname === "/login") return null;
+
   const navLinks = [
     { href: "/", label: "Feed", icon: Compass },
     { href: "/just-swipe", label: "JustSwipe", icon: Zap },
@@ -36,7 +38,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
                   <Heart className="w-4.5 h-4.5 text-indigo-500 fill-indigo-500/10" />
                 </div>
                 <h1 className="text-xl font-extrabold tracking-tight text-slate-800 dark:text-zinc-100 font-sans">
-                  UI<span className="text-indigo-500 font-medium">swipe</span>
+                  Sweipy<span className="text-indigo-500 font-medium"></span>
                 </h1>
               </Link>
             </div>
@@ -51,11 +53,10 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative px-4 py-2 text-sm font-semibold rounded-lg font-sans flex items-center gap-2 transition-colors duration-300 ${
-                      isActive
+                    className={`relative px-4 py-2 text-sm font-semibold rounded-lg font-sans flex items-center gap-2 transition-colors duration-300 ${isActive
                         ? "text-indigo-500 dark:text-indigo-400"
                         : "text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                    }`}
+                      }`}
                   >
                     {isActive && (
                       <motion.div
@@ -74,7 +75,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
             {/* Right Side Buttons */}
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              
+
               {user && <NotificationsMenu userId={user.id} />}
 
               {user ? (
@@ -117,11 +118,10 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-                  isActive
+                className={`relative flex flex-col items-center justify-center p-2 rounded-xl transition-all ${isActive
                     ? "text-indigo-500 dark:text-indigo-400 scale-105"
                     : "text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300"
-                }`}
+                  }`}
               >
                 {isActive && (
                   <motion.div
@@ -138,9 +138,8 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
           {user && (
             <Link
               href="/upload"
-              className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-                pathname === "/upload" ? "text-indigo-500" : "text-slate-400 dark:text-zinc-500"
-              }`}
+              className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${pathname === "/upload" ? "text-indigo-500" : "text-slate-400 dark:text-zinc-500"
+                }`}
             >
               <Upload className="w-5 h-5" />
             </Link>

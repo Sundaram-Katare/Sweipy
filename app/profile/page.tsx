@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import ComponentCardUI from "@/components/component-card";
 import { getFollowCountsAction } from "@/actions/follow";
 import { Heart, UploadCloud, Users, Settings, Bookmark, Code } from "lucide-react";
+import ProfileStats from "@/components/profile-stats";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -27,23 +28,37 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  // Fetch uploads created by the user
-  const { data: uploads } = await supabase
+  // Fetch uploads created by the user with dynamic counts
+  const { data: rawUploads } = await supabase
     .from("components")
-    .select("*, profiles(*)")
+    .select("*, profiles(*), likes(count), comments(count)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+
+  const uploads = (rawUploads || []).map((comp: any) => ({
+    ...comp,
+    likes_count: comp.likes?.[0]?.count ?? comp.likes_count ?? 0,
+    comments_count: comp.comments?.[0]?.count ?? comp.comments_count ?? 0,
+  }));
 
   // Fetch bookmarks saved by the user
   const { data: savedRecords } = await supabase
     .from("favorites")
-    .select("*, components(*, profiles(*))")
+    .select("*, components(*, profiles(*), likes(count), comments(count))")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   // Map saved components correctly
   const savedComponents = (savedRecords || [])
-    .map((record: any) => record.components)
+    .map((record: any) => {
+      const comp = record.components;
+      if (!comp) return null;
+      return {
+        ...comp,
+        likes_count: comp.likes?.[0]?.count ?? comp.likes_count ?? 0,
+        comments_count: comp.comments?.[0]?.count ?? comp.comments_count ?? 0,
+      };
+    })
     .filter(Boolean);
 
   // Fetch follower & following metrics
@@ -68,7 +83,7 @@ export default async function ProfilePage() {
         {/* Author Bio Panel */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
           <img
-            src={profile.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+            src={profile.avatar_url || "/default-avatar.avif"}
             alt={profile.username}
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-indigo-500/20 shadow-md shrink-0"
           />
@@ -113,65 +128,13 @@ export default async function ProfilePage() {
       </div>
 
       {/* Aggregate Stats Cards Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        
-        <div className="glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-zinc-800/60 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/10">
-            <UploadCloud className="w-5 h-5 text-indigo-500" />
-          </div>
-          <div>
-            <p className="text-2xl font-black font-sans text-slate-800 dark:text-zinc-100 tabular-nums">
-              {totalUploads}
-            </p>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
-              Uploads
-            </span>
-          </div>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-zinc-800/60 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/10">
-            <Heart className="w-5 h-5 text-rose-500" />
-          </div>
-          <div>
-            <p className="text-2xl font-black font-sans text-slate-800 dark:text-zinc-100 tabular-nums">
-              {totalLikes}
-            </p>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
-              Likes Received
-            </span>
-          </div>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-zinc-800/60 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/10">
-            <Users className="w-5 h-5 text-emerald-500" />
-          </div>
-          <div>
-            <p className="text-2xl font-black font-sans text-slate-800 dark:text-zinc-100 tabular-nums">
-              {followers}
-            </p>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
-              Followers
-            </span>
-          </div>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-zinc-800/60 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/10">
-            <Users className="w-5 h-5 text-amber-500" />
-          </div>
-          <div>
-            <p className="text-2xl font-black font-sans text-slate-800 dark:text-zinc-100 tabular-nums">
-              {following}
-            </p>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
-              Following
-            </span>
-          </div>
-        </div>
-
-      </div>
+      <ProfileStats
+        userId={user.id}
+        totalUploads={totalUploads}
+        totalLikes={totalLikes}
+        initialFollowers={followers}
+        initialFollowing={following}
+      />
 
       {/* Profile Collections Grids */}
       <div className="space-y-6">

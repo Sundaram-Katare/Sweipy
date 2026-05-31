@@ -34,7 +34,7 @@ export default function UserMenu({ user }: UserMenuProps) {
     router.push("/");
   };
 
-  const avatarUrl = user.user_metadata?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  const avatarUrl = user.user_metadata?.avatar_url || "/default-avatar.avif";
   const name = user.user_metadata?.user_name || user.email || "User";
 
   return (

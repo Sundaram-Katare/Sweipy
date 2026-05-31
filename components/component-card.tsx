@@ -18,7 +18,7 @@ export default function ComponentCardUI({ component }: Props) {
     router.push(`/component/${component.id}`);
   };
 
-  const creatorAvatar = component.profiles?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  const creatorAvatar = component.profiles?.avatar_url || "/default-avatar.avif";
   const creatorUsername = component.profiles?.username || "Anonymous";
 
   return (
@@ -41,7 +41,7 @@ export default function ComponentCardUI({ component }: Props) {
         border-slate-200/50
         dark:border-zinc-800/80
         bg-white
-        dark:bg-zinc-900/90
+        dark:bg-zinc-800/90
         p-4
         shadow-[0_10px_35px_-5px_rgba(0,0,0,0.03)]
         dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.25)]

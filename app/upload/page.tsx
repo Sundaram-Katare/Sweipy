@@ -49,7 +49,8 @@ export default function UploadPage() {
             .getPublicUrl(fileName);
           imageUrl = publicUrl;
         } else {
-          console.warn("Storage upload failed, falling back to image URL:", uploadError);
+          console.error("Storage upload error:", uploadError);
+          throw new Error(`Storage upload failed: ${uploadError.message}. Please verify that the 'components' bucket is created in Supabase Storage with upload policies.`);
         }
       }
 

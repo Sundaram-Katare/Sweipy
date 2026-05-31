@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Zap, RefreshCw, Star, Heart, Bookmark, Eye, MessageSquare, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, Zap, RefreshCw, Star, Heart, Bookmark, Eye, MessageSquare, ExternalLink, X } from "lucide-react";
 import Link from "next/link";
 import { ComponentCard } from "@/types/database";
 import LikeButton from "./like-button";
 import FavouriteButton from "./faviourite-button";
 import { useRouter } from "next/navigation";
+import CommentSection from "@/components/comment-section";
 
 type Props = {
   components: ComponentCard[];
@@ -17,6 +18,7 @@ export default function JustSwipeDeck({ components }: Props) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   
   // Motion values for swipe gestures
   const x = useMotionValue(0);
@@ -38,6 +40,7 @@ export default function JustSwipeDeck({ components }: Props) {
   // Swiping mechanics handler
   const handleSwipe = async (direction: "left" | "right") => {
     setSwipeDirection(direction);
+    setIsCommentsOpen(false); // Close comments on swipe
     
     // Animate active card out in the swiped direction
     await controls.start({
@@ -61,7 +64,7 @@ export default function JustSwipeDeck({ components }: Props) {
   // Keyboard navigation event triggers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (components.length === 0) return;
+      if (components.length === 0 || isCommentsOpen) return;
       if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") {
         return; // Avoid hijacking comments inputs
       }
@@ -77,9 +80,9 @@ export default function JustSwipeDeck({ components }: Props) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, components]);
+  }, [currentIndex, components, isCommentsOpen]);
 
-  const creatorAvatar = activeComponent?.profiles?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  const creatorAvatar = activeComponent?.profiles?.avatar_url || "/default-avatar.avif";
   const creatorUsername = activeComponent?.profiles?.username || "Anonymous";
 
   if (components.length === 0) {
@@ -123,7 +126,7 @@ export default function JustSwipeDeck({ components }: Props) {
         
         {/* Background Card Preview (Stack effect) */}
         {components.length > 1 && nextComponent && (
-          <div className="absolute w-full h-full scale-[0.94] translate-y-6 z-0 opacity-40 blur-[0.5px] pointer-events-none select-none rounded-3xl border border-slate-200/50 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/90 p-4 shadow-md transition-all duration-300">
+          <div className="absolute w-full h-full scale-[0.94] translate-y-6 z-0 opacity-40 blur-[0.5px] pointer-events-none select-none rounded-3xl border border-slate-200/50 dark:border-zinc-800/80 bg-white dark:bg-zinc-800/90 p-4 shadow-md transition-all duration-300">
             {/* Header placeholder */}
             <div className="flex items-center gap-3 mb-4.5">
               <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-zinc-800" />
@@ -176,7 +179,7 @@ export default function JustSwipeDeck({ components }: Props) {
             border-slate-200/50
             dark:border-zinc-800/80
             bg-white
-            dark:bg-zinc-900/90
+            dark:bg-zinc-800/90
             p-4
             shadow-[0_12px_40px_rgba(0,0,0,0.06)]
             dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)]
@@ -187,23 +190,6 @@ export default function JustSwipeDeck({ components }: Props) {
             group
           "
         >
-          {/* Dynamic "LIKE" stamp badge */}
-          <motion.div
-            style={{ opacity: likeOpacity }}
-            className="absolute top-10 left-10 z-20 border-4 border-emerald-500 text-emerald-500 font-black font-sans uppercase tracking-widest text-3xl px-4 py-1.5 rounded-xl rotate-[-12deg] pointer-events-none shadow-md shadow-emerald-500/10"
-          >
-            LIKE
-          </motion.div>
-
-          {/* Dynamic "NOPE" stamp badge */}
-          <motion.div
-            style={{ opacity: nopeOpacity }}
-            className="absolute top-10 right-10 z-20 border-4 border-rose-500 text-rose-500 font-black font-sans uppercase tracking-widest text-3xl px-4 py-1.5 rounded-xl rotate-[12deg] pointer-events-none shadow-md shadow-rose-500/10"
-          >
-            NOPE
-          </motion.div>
-
-          {/* Card Header (Creator badge) */}
           <div className="flex items-center justify-between mb-4.5 px-1 select-none">
             <div
               onClick={(e) => {
@@ -294,10 +280,14 @@ export default function JustSwipeDeck({ components }: Props) {
                 <span className="tabular-nums">{activeComponent.views_count || 0}</span>
               </div>
               
-              <div className="flex items-center gap-1 text-slate-400 dark:text-zinc-500 px-2.5 py-1.5 rounded-xl text-xs font-semibold select-none font-sans mr-1">
-                <MessageSquare className="w-4 h-4 text-slate-400" />
+              <button
+                onClick={() => setIsCommentsOpen(true)}
+                className="flex items-center gap-1 text-slate-400 dark:text-zinc-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-zinc-800/40 px-2.5 py-1.5 rounded-xl text-xs font-semibold select-none font-sans mr-1 cursor-pointer transition-colors"
+                aria-label="Open comments"
+              >
+                <MessageSquare className="w-4 h-4 text-slate-400 dark:text-zinc-500 transition-colors group-hover:text-indigo-500" />
                 <span className="tabular-nums">{activeComponent.comments_count || 0}</span>
-              </div>
+              </button>
 
               <LikeButton
                 componentId={activeComponent.id}
@@ -322,9 +312,9 @@ export default function JustSwipeDeck({ components }: Props) {
           <ArrowLeft className="w-5 h-5" />
         </motion.button>
 
-        <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500 font-sans flex items-center gap-1.5">
+        {/* <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500 font-sans flex items-center gap-1.5">
           <span>Card {currentIndex + 1} of {components.length}</span>
-        </span>
+        </span> */}
 
         <motion.button
           whileHover={{ scale: 1.08 }}
@@ -340,6 +330,53 @@ export default function JustSwipeDeck({ components }: Props) {
       <div className="hidden sm:flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-600 select-none font-sans">
         <span>Use left and right keyboard arrows to swipe cards</span>
       </div>
+
+      {/* Comments Drawer */}
+      <AnimatePresence>
+        {isCommentsOpen && (
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCommentsOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+            />
+
+            {/* Comments Container Panel */}
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 md:rounded-3xl rounded-t-3xl border border-slate-200/60 dark:border-zinc-800 shadow-2xl z-10 flex flex-col max-h-[85vh] md:max-h-[80vh] overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800/80 shrink-0">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-indigo-500" />
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-100 font-sans">
+                    Comments ({activeComponent.comments_count || 0})
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsCommentsOpen(false)}
+                  className="p-1.5 rounded-xl border border-slate-100 dark:border-zinc-800 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800/40 transition-colors cursor-pointer"
+                  aria-label="Close comments"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Scrollable Comments wrapper */}
+              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
+                <CommentSection componentId={activeComponent.id} isModal={true} />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -46,7 +46,7 @@ export default async function LeaderboardPage() {
       leaderBoardMap[item.user_id] = {
         userId: item.user_id,
         username,
-        avatar: creator.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatar: creator.avatar_url || "/default-avatar.avif",
         bio: creator.bio || "",
         likes: 0,
         comments: 0,
@@ -244,7 +244,7 @@ export default async function LeaderboardPage() {
                         {user.username}
                       </p>
                       <p className="text-[10px] text-slate-400 dark:text-zinc-500 truncate max-w-xs sm:max-w-md mt-0.5">
-                        {user.bio || "UISwipe design creator"}
+                        {user.bio || "Sweipy design creator"}
                       </p>
                     </div>
                   </div>

@@ -9,9 +9,10 @@ import { MessageSquare, Send, Calendar } from "lucide-react";
 
 type Props = {
   componentId: string;
+  isModal?: boolean;
 };
 
-export default function CommentSection({ componentId }: Props) {
+export default function CommentSection({ componentId, isModal }: Props) {
   const supabase = createClient();
   const [comments, setComments] = useState<any[]>([]);
   const [commentText, setCommentText] = useState("");
@@ -54,7 +55,7 @@ export default function CommentSection({ componentId }: Props) {
           table: "comments",
           filter: `component_id=eq.${componentId}`,
         },
-        async (payload) => {
+        async (payload: any) => {
           // Resolve profile for the new comment author
           const { data: profile } = await supabase
             .from("profiles")
@@ -117,12 +118,14 @@ export default function CommentSection({ componentId }: Props) {
   };
 
   return (
-    <div className="mt-12 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-zinc-800/80">
-      <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2 mb-6">
-        <MessageSquare className="w-5 h-5 text-indigo-500" />
-        <span>Comments</span>
-        <span className="text-sm font-normal text-slate-400">({comments.length})</span>
-      </h3>
+    <div className={isModal ? "w-full space-y-4" : "mt-12 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-zinc-800/80"}>
+      {!isModal && (
+        <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2 mb-6">
+          <MessageSquare className="w-5 h-5 text-indigo-500" />
+          <span>Comments</span>
+          <span className="text-sm font-normal text-slate-400">({comments.length})</span>
+        </h3>
+      )}
 
       {/* Comments List */}
       <div className="max-h-[450px] overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-8">
@@ -148,7 +151,7 @@ export default function CommentSection({ componentId }: Props) {
             <AnimatePresence initial={false}>
               {comments.map((comment) => {
                 const author = comment.profiles;
-                const avatar = author?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                const avatar = author?.avatar_url || "/default-avatar.avif";
                 const username = author?.username || "Anonymous";
 
                 return (
