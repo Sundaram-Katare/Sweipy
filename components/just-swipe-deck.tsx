@@ -19,6 +19,7 @@ export default function JustSwipeDeck({ components }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   
   // Motion values for swipe gestures
   const x = useMotionValue(0);
@@ -41,6 +42,7 @@ export default function JustSwipeDeck({ components }: Props) {
   const handleSwipe = async (direction: "left" | "right") => {
     setSwipeDirection(direction);
     setIsCommentsOpen(false); // Close comments on swipe
+    setIsImageModalOpen(false); // Close image preview on swipe
     
     // Animate active card out in the swiped direction
     await controls.start({
@@ -64,7 +66,13 @@ export default function JustSwipeDeck({ components }: Props) {
   // Keyboard navigation event triggers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (components.length === 0 || isCommentsOpen) return;
+      if (e.key === "Escape") {
+        setIsImageModalOpen(false);
+        setIsCommentsOpen(false);
+        return;
+      }
+
+      if (components.length === 0 || isCommentsOpen || isImageModalOpen) return;
       if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") {
         return; // Avoid hijacking comments inputs
       }
@@ -80,7 +88,7 @@ export default function JustSwipeDeck({ components }: Props) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, components, isCommentsOpen]);
+  }, [currentIndex, components, isCommentsOpen, isImageModalOpen]);
 
   const creatorAvatar = activeComponent?.profiles?.avatar_url || "/default-avatar.avif";
   const creatorUsername = activeComponent?.profiles?.username || "Anonymous";
@@ -220,7 +228,8 @@ export default function JustSwipeDeck({ components }: Props) {
           {/* Screen Image Preview (stops drag triggers inside links) */}
           <div 
             onPointerDown={(e) => e.stopPropagation()} 
-            className="relative rounded-2xl overflow-hidden bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800/40 select-none"
+            onClick={() => setIsImageModalOpen(true)}
+            className="relative rounded-2xl overflow-hidden bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800/40 select-none cursor-zoom-in group/image"
           >
             <img
               src={activeComponent.image_url}
@@ -235,6 +244,12 @@ export default function JustSwipeDeck({ components }: Props) {
                 pointer-events-none
               "
             />
+
+            {/* Zoom Icon indicator */}
+            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white p-2 rounded-xl opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
+              <Eye className="w-4 h-4" />
+            </div>
+
             {/* Overlay detail redirects */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
               <div className="flex items-center gap-3">
@@ -250,6 +265,7 @@ export default function JustSwipeDeck({ components }: Props) {
                     href={activeComponent.preview_url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
                     className="text-xs font-bold text-white px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 shadow-md shadow-indigo-500/20 transition-colors flex items-center gap-1.5 font-sans"
                   >
                     <span>Live Preview</span>
@@ -372,6 +388,73 @@ export default function JustSwipeDeck({ components }: Props) {
               {/* Scrollable Comments wrapper */}
               <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
                 <CommentSection componentId={activeComponent.id} isModal={true} />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Immersive Image Modal for Mobile/Desktop full preview */}
+      <AnimatePresence>
+        {isImageModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute inset-0 bg-black/85 backdrop-blur-md cursor-zoom-out"
+            />
+
+            {/* Modal Body */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative max-w-4xl w-full bg-slate-900 dark:bg-zinc-950 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col max-h-[90vh] z-10"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 shrink-0 bg-slate-950/80 backdrop-blur-md text-white select-none">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold truncate font-sans">
+                    {activeComponent.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 font-sans truncate">
+                    by {creatorUsername} • {activeComponent.category || "General"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  {activeComponent.preview_url && (
+                    <a
+                      href={activeComponent.preview_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-white px-3.5 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 transition-colors flex items-center gap-1.5 font-sans"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Live Preview</span>
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setIsImageModalOpen(false)}
+                    className="p-1.5 rounded-xl border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                    aria-label="Close preview"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable image area */}
+              <div className="flex-1 overflow-y-auto bg-slate-950/40 p-4 sm:p-6 flex justify-center items-start scrollbar-thin">
+                <img
+                  src={activeComponent.image_url}
+                  alt={activeComponent.title}
+                  className="w-full h-auto rounded-xl object-contain max-h-none"
+                  onDragStart={(e) => e.preventDefault()}
+                />
               </div>
             </motion.div>
           </div>
