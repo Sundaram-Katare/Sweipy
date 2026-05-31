@@ -52,7 +52,7 @@ export default function LikeButton({
         throw new Error(result.error);
       }
 
-      setIsLiked(result.isLiked);
+      setIsLiked(result.isLiked ?? false);
       
       if (result.isLiked) {
         toast.success("Added to likes", { icon: "❤️" });

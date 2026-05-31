@@ -45,7 +45,7 @@ export default function FavouriteButton({
         throw new Error(result.error);
       }
 
-      setIsFavorited(result.isFavorited);
+      setIsFavorited(result.isFavorited ?? false);
       
       if (result.isFavorited) {
         toast.success("Saved to favorites", { icon: "✨" });

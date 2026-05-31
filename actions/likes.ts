@@ -9,7 +9,7 @@ export async function toggleLikeAction(componentId: string) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "You must be logged in to like a component." };
+      return { success: false, error: "You must be logged in to like a component.", isLiked: false };
     }
 
     // Check if like exists
@@ -22,7 +22,7 @@ export async function toggleLikeAction(componentId: string) {
 
     if (fetchError) {
       console.error("Error checking like:", fetchError);
-      return { success: false, error: "Failed to process like status." };
+      return { success: false, error: "Failed to process like status.", isLiked: false };
     }
 
     let isLikedNow = false;
@@ -36,7 +36,7 @@ export async function toggleLikeAction(componentId: string) {
 
       if (deleteError) {
         console.error("Error deleting like:", deleteError);
-        return { success: false, error: deleteError.message };
+        return { success: false, error: deleteError.message, isLiked: false };
       }
       isLikedNow = false;
     } else {
@@ -50,7 +50,7 @@ export async function toggleLikeAction(componentId: string) {
 
       if (insertError) {
         console.error("Error inserting like:", insertError);
-        return { success: false, error: insertError.message };
+        return { success: false, error: insertError.message, isLiked: false };
       }
       isLikedNow = true;
     }
@@ -62,7 +62,7 @@ export async function toggleLikeAction(componentId: string) {
     return { success: true, isLiked: isLikedNow };
   } catch (err: any) {
     console.error("Error in toggleLikeAction:", err);
-    return { success: false, error: err.message || "An unexpected error occurred." };
+    return { success: false, error: err.message || "An unexpected error occurred.", isLiked: false };
   }
 }
 

@@ -9,7 +9,7 @@ export async function toggleFavoriteAction(componentId: string) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "You must be logged in to save components." };
+      return { success: false, error: "You must be logged in to save components.", isFavorited: false };
     }
 
     // Check if already favorited
@@ -22,7 +22,7 @@ export async function toggleFavoriteAction(componentId: string) {
 
     if (fetchError) {
       console.error("Error checking favorites table (make sure migrations are run):", fetchError);
-      return { success: false, error: "Favorites system is being configured. Please ensure migrations are applied." };
+      return { success: false, error: "Favorites system is being configured. Please ensure migrations are applied.", isFavorited: false };
     }
 
     let isFavoritedNow = false;
@@ -36,7 +36,7 @@ export async function toggleFavoriteAction(componentId: string) {
 
       if (deleteError) {
         console.error("Error deleting favorite:", deleteError);
-        return { success: false, error: deleteError.message };
+        return { success: false, error: deleteError.message, isFavorited: false };
       }
       isFavoritedNow = false;
     } else {
@@ -50,7 +50,7 @@ export async function toggleFavoriteAction(componentId: string) {
 
       if (insertError) {
         console.error("Error inserting favorite:", insertError);
-        return { success: false, error: insertError.message };
+        return { success: false, error: insertError.message, isFavorited: false };
       }
       isFavoritedNow = true;
     }
@@ -62,7 +62,7 @@ export async function toggleFavoriteAction(componentId: string) {
     return { success: true, isFavorited: isFavoritedNow };
   } catch (err: any) {
     console.error("Error in toggleFavoriteAction:", err);
-    return { success: false, error: err.message || "An unexpected error occurred." };
+    return { success: false, error: err.message || "An unexpected error occurred.", isFavorited: false };
   }
 }
 
