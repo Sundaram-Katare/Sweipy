@@ -48,6 +48,10 @@ export default function LikeButton({
 
     try {
       const result = await toggleLikeAction(componentId);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
       setIsLiked(result.isLiked);
       
       if (result.isLiked) {

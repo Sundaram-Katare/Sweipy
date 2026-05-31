@@ -41,6 +41,10 @@ export default function FavouriteButton({
 
     try {
       const result = await toggleFavoriteAction(componentId);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
       setIsFavorited(result.isFavorited);
       
       if (result.isFavorited) {

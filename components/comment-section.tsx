@@ -97,7 +97,10 @@ export default function CommentSection({ componentId, isModal }: Props) {
 
     setSubmitting(true);
     try {
-      await addCommentAction(componentId, commentText);
+      const result = await addCommentAction(componentId, commentText);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       setCommentText("");
       toast.success("Comment added successfully");
     } catch (err: any) {
