@@ -158,8 +158,13 @@ export default function HomeFeed({
           ))}
         </motion.h2>
         <p className="text-sm sm:text-base text-slate-500 dark:text-zinc-400 font-sans max-w-md">
-         | Swipe | Discover | Inspired |
+         UI inspiration that doesn't waste your time. 
         </p>
+
+        <p className="text-sm sm:text-base text-slate-500 dark:text-zinc-400 font-sans max-w-md">
+         Swipe. Save. Build.
+        </p>
+
         {/* Rating and Users Statistics section */}
         <div className="flex items-center justify-center gap-2.5 mt-3 text-xs font-semibold font-sans tracking-wide select-none">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 dark:bg-zinc-900/60 border border-slate-200/30 dark:border-zinc-800/50 text-slate-600 dark:text-zinc-300 shadow-xs hover:bg-slate-200/50 dark:hover:bg-zinc-900/90 transition-colors duration-200">
