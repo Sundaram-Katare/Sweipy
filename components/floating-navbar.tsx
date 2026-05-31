@@ -108,7 +108,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
       </header>
 
       {/* Mobile Sticky Bottom Nav Dock */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:hidden w-[90%] max-w-sm glass-panel p-2 rounded-2xl border border-slate-200/50 dark:border-zinc-800/80 shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:hidden w-[90%] max-w-sm bg-slate-950/95 dark:bg-zinc-950/95 backdrop-blur-xl p-2 rounded-2xl border border-slate-800/60 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
         <div className="flex items-center justify-around h-12">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -119,14 +119,14 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
                 key={link.href}
                 href={link.href}
                 className={`relative flex flex-col items-center justify-center p-2 rounded-xl transition-all ${isActive
-                    ? "text-indigo-500 dark:text-indigo-400 scale-105"
-                    : "text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300"
+                    ? "text-indigo-400 scale-105"
+                    : "text-zinc-400 hover:text-zinc-200"
                   }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobileActiveIndicator"
-                    className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-indigo-500"
+                    className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-indigo-400"
                     transition={{ type: "spring", stiffness: 350, damping: 25 }}
                   />
                 )}
@@ -138,7 +138,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
           {user && (
             <Link
               href="/upload"
-              className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${pathname === "/upload" ? "text-indigo-500" : "text-slate-400 dark:text-zinc-500"
+              className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${pathname === "/upload" ? "text-indigo-400" : "text-zinc-400 hover:text-zinc-200"
                 }`}
             >
               <Upload className="w-5 h-5" />
@@ -152,7 +152,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
           ) : (
             <Link
               href="/login"
-              className="text-xs font-semibold text-indigo-500 font-sans px-3 py-1.5 border border-indigo-500/20 bg-indigo-500/5 rounded-lg"
+              className="text-xs font-semibold text-indigo-400 font-sans px-3 py-1.5 border border-indigo-500/30 bg-indigo-500/10 rounded-lg hover:bg-indigo-500/20 transition-colors"
             >
               Login
             </Link>
