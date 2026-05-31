@@ -3,7 +3,7 @@ import JustSwipeDeck from "@/components/just-swipe-deck";
 
 export const metadata = {
   title: "JustSwipe | Immersive UI Flashcards",
-  description: "Browse premium frontend templates and UI sections with tactile horizontal swipes and 3D card deck transitions.",
+  description: "Swipe | Discover | Inspired",
 };
 
 export default async function JustSwipePage() {
