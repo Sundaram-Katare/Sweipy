@@ -64,7 +64,7 @@ export default async function UserPage({
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 space-y-10">
-      
+
       {/* Return Header */}
       <div className="flex items-center gap-3">
         <Link
@@ -85,7 +85,7 @@ export default async function UserPage({
 
       {/* Creator Header Profile Card */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-zinc-800/80 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
-        
+
         {/* Author Bio Panel */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
           <img

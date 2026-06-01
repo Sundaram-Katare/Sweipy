@@ -169,7 +169,7 @@ export default function HomeFeed({
         <div className="flex items-center justify-center gap-2.5 mt-3 text-xs font-semibold font-sans tracking-wide select-none">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 dark:bg-zinc-900/60 border border-slate-200/30 dark:border-zinc-800/50 text-slate-600 dark:text-zinc-300 shadow-xs hover:bg-slate-200/50 dark:hover:bg-zinc-900/90 transition-colors duration-200">
             <Star className="w-4.5 h-4.5 text-amber-500 fill-amber-500" />
-            <span className="text-lg">{averageRating > 0 ? `${averageRating} / 5` : "5.0 / 5"}</span>
+            <span className="text-md md:text-lg">{averageRating > 0 ? `${averageRating} / 5` : "5.0 / 5"}</span>
             {totalRatingsCount > 0 && (
               <span className="text-lg text-slate-400 dark:text-zinc-500 font-normal">
                 Rating
@@ -178,7 +178,7 @@ export default function HomeFeed({
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 dark:bg-zinc-900/60 border border-slate-200/30 dark:border-zinc-800/50 text-slate-600 dark:text-zinc-300 shadow-xs hover:bg-slate-200/50 dark:hover:bg-zinc-900/90 transition-colors duration-200">
             <Users className="w-3.5 h-3.5 text-indigo-500" />
-            <span className="text-lg">
+            <span className="text-md md:text-lg">
               {usersCount} {usersCount === 1 ? "Creator" : "Creators"}
             </span>
           </div>

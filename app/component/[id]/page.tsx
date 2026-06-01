@@ -132,7 +132,7 @@ export default async function ComponentPage({
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
               Shared By
             </h4>
-            
+
             <Link
               href={`/user/${component.user_id}`}
               className="flex items-center gap-3 hover:opacity-85 transition-opacity group cursor-pointer"
@@ -158,7 +158,7 @@ export default async function ComponentPage({
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">
               Engagement Metrics
             </h4>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 font-sans font-semibold">
                 <span className="flex items-center gap-1.5">
