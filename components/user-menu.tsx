@@ -8,9 +8,10 @@ import { User, LogOut, ChevronDown } from "lucide-react";
 
 interface UserMenuProps {
   user: any;
+  alignUp?: boolean;
 }
 
-export default function UserMenu({ user }: UserMenuProps) {
+export default function UserMenu({ user, alignUp = false }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -52,7 +53,11 @@ export default function UserMenu({ user }: UserMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.4)] py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className={`absolute right-0 w-48 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.4)] py-2 z-50 animate-in fade-in duration-200 ${
+          alignUp 
+            ? "bottom-full mb-2 slide-in-from-bottom-1" 
+            : "top-full mt-2 slide-in-from-top-1"
+        }`}>
           <div className="px-4 py-2 border-b border-slate-50 dark:border-zinc-800/60">
             <p className="text-xs font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider font-sans">Signed in as</p>
             <p className="text-sm font-medium text-slate-700 dark:text-zinc-300 truncate font-sans">{name}</p>

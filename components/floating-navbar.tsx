@@ -147,7 +147,7 @@ export default function FloatingNavbar({ user }: FloatingNavbarProps) {
 
           {user ? (
             <div className="flex items-center shrink-0">
-              <UserMenu user={user} />
+              <UserMenu user={user} alignUp={true} />
             </div>
           ) : (
             <Link
